@@ -1,0 +1,304 @@
+{
+	"info": {
+		"_postman_id": "dbd342ec-0b3b-4709-b78b-cf4bfbf9296e",
+		"name": "Mutual Fund Management",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "2560054"
+	},
+	"item": [
+		{
+			"name": "user-management",
+			"item": [
+				{
+					"name": "createUser",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\": \"subash12396_User1\",\r\n    \"emailId\": \"subash12396_U1@gmail.com\",\r\n    \"password\": \"subash1010\",\r\n    \"phoneNumber\": \"9560713604\",\r\n    \"role\": \"USER\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/v1/api/users/register",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"v1",
+								"api",
+								"users",
+								"register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get User",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "subash3112",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "subash12396",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/v1/api/users/subash12396_User",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"v1",
+								"api",
+								"users",
+								"subash12396_User"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Fetch All users",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "subash3112",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "subash12396",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/v1/api/users",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"v1",
+								"api",
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Remove User",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "username",
+									"value": "subash12396",
+									"type": "string"
+								},
+								{
+									"key": "password",
+									"value": "subash3112",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/v1/api/users/subash12396_user",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"v1",
+								"api",
+								"users",
+								"subash12396_user"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "fund-management",
+			"item": [
+				{
+					"name": "CreateFund",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "username",
+									"value": "subash12396",
+									"type": "string"
+								},
+								{
+									"key": "password",
+									"value": "subash3112",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"fundId\" : \"038309373933232\",\r\n    \"fundName\": \"UTI Index Funds Nifty 50\",\r\n    \"nav\": 150.32,\r\n    \"navDate\": \"2025-06-15\",\r\n    \"totalUnits\": 45672.10\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:9090/v1/api/funds",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "9090",
+							"path": [
+								"v1",
+								"api",
+								"funds"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Fund",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "subash3112",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "subash12396",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"nav\": 281.82,\r\n    \"navDate\": \"2025-06-17\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:9090/v1/api/funds/7398729202",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "9090",
+							"path": [
+								"v1",
+								"api",
+								"funds",
+								"7398729202"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "createOrder",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "subash1010",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "subash12396_User1",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\":\"subash12396_User1\",\r\n    \"fundId\": \"7398729202\",\r\n    \"units\": 100,\r\n    \"nav\" : 281.82\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:9090/v1/api/funds/order?orderType=BUY",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "9090",
+							"path": [
+								"v1",
+								"api",
+								"funds",
+								"order"
+							],
+							"query": [
+								{
+									"key": "orderType",
+									"value": "BUY"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}

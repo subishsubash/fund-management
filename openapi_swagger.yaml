@@ -1,0 +1,143 @@
+openapi: 3.0.0
+info:
+  title: Mutual Fund - User Management Service
+  description: APIs helps to manage the user details.
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:8081/user-management/v1/api/
+
+paths:
+  /v1/api/users/register:
+    post:
+      tags:
+        - UsersController
+      summary: Enrollment of new user
+      operationId: createUser
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserView"
+      responses:
+        '201':
+          description: User enrollment response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserResponse"
+
+  /v1/api/users/{username}:
+    get:
+      tags:
+        - UsersController
+      summary: Get user details
+      operationId: getUser
+      parameters:
+        - name: username
+          in: path
+          required: true
+          description: username to retrieve user details
+          schema:
+            type: string
+      responses:
+        '201':
+          description: User Details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserResponse"
+    delete:
+      tags:
+        - UsersController
+      summary: Delete user details
+      operationId: removeUser
+      parameters:
+        - name: username
+          in: path
+          required: true
+          description: username to remove user details
+          schema:
+            type: string
+      responses:
+        '201':
+          description: User Details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserResponse"
+  /v1/api/users:
+    get:
+      tags:
+        - UsersController
+      summary: Fetch All users
+      operationId: getAllUser
+      responses:
+        '201':
+          description: All User Details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AllUserResponse"
+
+components:
+  schemas:
+    AllUserResponse:
+      type: object
+      properties:
+        users:
+          type: array
+          items:
+            $ref: "#/components/schemas/UserView"
+        code:
+          type: integer
+        message:
+          type: string
+      required:
+        - status
+        - message
+        - user
+    UserResponse:
+      type: object
+      properties:
+        user:
+          $ref: "#/components/schemas/UserView"
+        code:
+          type: integer
+        message:
+          type: string
+      required:
+        - status
+        - message
+        - user
+    UserView:
+      type: object
+      properties:
+        username:
+          type: string
+          minLength: 5
+          maxLength: 20
+          pattern: "^[a-zA-Z0-9_]+$"
+          description: "Must be alphanumeric with underscores, 5-20 characters"
+        password:
+          type: string
+          minLength: 8
+          maxLength: 50
+          pattern: "^[a-zA-Z0-9_]+$"
+          description: "Must be alphanumeric with underscores, 8-50 characters"
+        role:
+          type: string
+          enum: [ ADMIN, USER ]
+        emailId:
+          type: string
+          format: email
+        phoneNumber:
+          type: string
+          pattern: "^\\d{10}$"
+          description: "Must be a 10-digit number"
+      required:
+        - username
+        - passwordHash
+        - role
+

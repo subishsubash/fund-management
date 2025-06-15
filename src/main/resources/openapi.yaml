@@ -134,7 +134,6 @@ components:
       properties:
         nav:
           type: number
-          format: double
           description: Script price
           minimum: 0.1
           example: 999.99

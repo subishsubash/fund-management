@@ -12,7 +12,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
 import java.util.Optional;
 
 import static com.subash.fund.management.util.Constants.*;
@@ -26,7 +25,7 @@ import static com.subash.fund.management.util.Constants.*;
  *     <li>Updating NAV (Net Asset Value) for existing funds</li>
  *     <li>Logging and exception handling</li>
  * </ul>
- *
+ * <p>
  * This class uses {@link FundRepository} and {@link FundNavRepository} for data persistence,
  * and {@link FundMapper} for model transformation.
  *
@@ -52,9 +51,9 @@ public class FundServiceImpl implements FundService {
     /**
      * Constructor to inject required dependencies.
      *
-     * @param fundRepository     Repository for fund scripts
-     * @param fundNavRepository  Repository for fund NAVs
-     * @param genericLogger      Utility logger for request/response logging
+     * @param fundRepository    Repository for fund scripts
+     * @param fundNavRepository Repository for fund NAVs
+     * @param genericLogger     Utility logger for request/response logging
      */
     public FundServiceImpl(FundRepository fundRepository, FundNavRepository fundNavRepository, GenericLogger genericLogger) {
         this.fundRepository = fundRepository;
@@ -113,9 +112,9 @@ public class FundServiceImpl implements FundService {
      * <p>
      * If the fund is not found, it returns a {@code RECORD_NOT_FOUND} response.
      *
-     * @param uuid         Unique identifier for request tracking
-     * @param fundId       ID of the fund to be updated
-     * @param fundNavView  Incoming NAV data
+     * @param uuid        Unique identifier for request tracking
+     * @param fundId      ID of the fund to be updated
+     * @param fundNavView Incoming NAV data
      * @return {@link ResponseEntity} containing success or error message
      * @throws Exception if update fails due to database or processing error
      */
@@ -130,7 +129,7 @@ public class FundServiceImpl implements FundService {
             if (fundScriptOptional.isPresent()) {
                 fundNav.setFundId(fundScriptOptional.get());
                 fundNav.setNavDate(fundNavView.getNavDate());
-                fundNav.setNav(new BigDecimal(fundNavView.getNav()));
+                fundNav.setNav(fundNavView.getNav());
                 fundNavRepository.save(fundNav);
                 fundResponse.setCode(UPDATE_RECORD_SUCCESS_CODE);
                 fundResponse.setMessage(UPDATE_RECORD_SUCCESS);

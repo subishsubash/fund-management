@@ -32,7 +32,7 @@ components:
     FundResponse:
       type: object
       properties:
-        user:
+        Fund:
           $ref: "#/components/schemas/FundView"
         code:
           type: integer

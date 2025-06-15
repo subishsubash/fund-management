@@ -85,6 +85,12 @@
 
         <dependency>
             <groupId>org.mapstruct</groupId>
+            <artifactId>mapstruct</artifactId>
+            <version>1.5.5.Final</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.mapstruct</groupId>
             <artifactId>mapstruct-processor</artifactId>
             <version>1.5.5.Final</version>
         </dependency>
@@ -110,6 +116,11 @@
             <scope>test</scope>
         </dependency>
 
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+            <version>2.7.0</version> <!-- Check for latest -->
+        </dependency>
     </dependencies>
 
     <build>
@@ -146,10 +157,21 @@
                         <skipDefaultInterface>true</skipDefaultInterface>
                         <interfaceOnly>false</interfaceOnly>
                         <delegatePattern>false</delegatePattern>
-                        <dateLibrary>java21</dateLibrary>
+                        <dateLibrary>java8</dateLibrary>
                         <useJakartaEe>true</useJakartaEe>
                         <useTags>true</useTags>
                     </configOptions>
+                </configuration>
+            </plugin>
+
+            <!-- Map struct -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.10.1</version>
+                <configuration>
+                    <source>21</source>
+                    <target>21</target>
                 </configuration>
             </plugin>
 

@@ -16,7 +16,7 @@ public class FundScript {
 
     @Id
     @Column(name = "fund_id", unique = true, updatable = false, nullable = false)
-    private Long fundId;
+    private String fundId;
 
     @Column(name = "fund_name", nullable = false)
     private String fundName;

@@ -64,6 +64,25 @@
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
         </dependency>
+
+        <dependency>
+            <groupId>io.swagger.core.v3</groupId>
+            <artifactId>swagger-annotations</artifactId>
+            <version>2.2.27</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.openapitools</groupId>
+            <artifactId>jackson-databind-nullable</artifactId>
+            <version>0.2.6</version>
+        </dependency>
+
+        <dependency>
+            <groupId>jakarta.validation</groupId>
+            <artifactId>jakarta.validation-api</artifactId>
+            <version>3.0.1</version>
+        </dependency>
+
     </dependencies>
 
     <build>
@@ -71,7 +90,42 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <mainClass>com.subash.fund.management.UserManagementApplication</mainClass>
+                </configuration>
             </plugin>
+
+            <plugin>
+                <groupId>org.openapitools</groupId>
+                <artifactId>openapi-generator-maven-plugin</artifactId>
+                <version>7.13.0</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <inputSpec>${project.basedir}/src/main/resources/openapi.yaml</inputSpec>
+                    <generatorName>spring</generatorName>
+                    <output>${project.build.directory}/generated-sources/openapi</output>
+                    <modelPackage>com.subash.fund.management.model</modelPackage>
+                    <generateApiTests>false</generateApiTests>
+                    <generateApis>false</generateApis>
+                    <generateSupportingFiles>false</generateSupportingFiles>
+                    <generateApiDocumentation>false</generateApiDocumentation>
+                    <configOptions>`
+                        <skipDefaultInterface>true</skipDefaultInterface>
+                        <interfaceOnly>false</interfaceOnly>
+                        <delegatePattern>false</delegatePattern>
+                        <dateLibrary>java21</dateLibrary>
+                        <useJakartaEe>true</useJakartaEe>
+                        <useTags>true</useTags>
+                    </configOptions>
+                </configuration>
+            </plugin>
+
         </plugins>
     </build>
 

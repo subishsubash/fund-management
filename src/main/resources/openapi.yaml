@@ -1,0 +1,76 @@
+openapi: 3.0.0
+info:
+  title: Mutual Fund - Fund Management Service
+  description: APIs helps to manage the fund details.
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:8081/fund-management/v1/api
+
+paths:
+  /v1/api/funds:
+    post:
+      tags:
+        - FundController
+      summary: Add new funds
+      operationId: createFund
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/FundView"
+      responses:
+        '201':
+          description: Funds creation response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FundResponse"
+components:
+  schemas:
+    FundResponse:
+      type: object
+      properties:
+        user:
+          $ref: "#/components/schemas/FundView"
+        code:
+          type: integer
+        message:
+          type: string
+      required:
+        - status
+        - message
+        - user
+    FundView:
+      type: object
+      properties:
+        fundId:
+          type: string
+          minLength: 10
+          maxLength: 20
+          pattern: "^[a-zA-Z0-9]+$"
+          description: "Must be alphanumeric, 10-20 characters"
+        fundName:
+          type: string
+          minLength: 10
+          maxLength: 50
+          pattern: "^[a-zA-Z0-9]+$"
+          description: "Must be alphanumeric, 10-50 characters"
+        nav:
+          type: number
+          format: double
+          description: Product price
+          minimum: 0.1
+          example: 999.99
+        navDate:
+          type: string
+          format: date
+          description: Nav date
+          example: 2025-05-31
+      required:
+        - fundId
+        - fundName
+        - nav
+        - navDate
+

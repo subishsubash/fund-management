@@ -30,8 +30,6 @@ public class Constants {
     // Operation Id
     public final static String CREATE_FUND = "createFund";
     public final static String UPDATE_FUND = "updateFund";
-    public final static String GET_FUND = "getFund";
-    public final static String REMOVE_FUND = "removeFund";
     public final static String CREATE_ORDER = "createOrder";
 
 
@@ -48,33 +46,29 @@ public class Constants {
     public static final Integer FUND_NAV_VALUE_CODE = 5005;
     public static final String RECORD_NOT_FOUND = "Requested fund details are unavailable.";
     public static final Integer RECORD_NOT_FOUND_CODE = 5006;
-
-    public static final String RECORD_REMOVED = "Fund details removed successfully.";
-    public static final Integer RECORD_REMOVED_CODE = 5007;
     public static final String ACCESS_DENIED = "Access denied: You are not authorized to create an order for another user.";
     public static final Integer ACCESS_DENIED_CODE = 403;
 
-    public static final Integer INSUFFICIENT_UNITS_USER_CODE  = 5008;
+    public static final Integer INSUFFICIENT_UNITS_USER_CODE = 5008;
     public static final String INSUFFICIENT_UNITS_USER = "You do not have enough funds to place this sell order.";
 
-    public static final Integer INSUFFICIENT_UNITS_FUNDS_CODE  = 5009;
+    public static final Integer INSUFFICIENT_UNITS_FUNDS_CODE = 5009;
     public static final String INSUFFICIENT_UNITS_FUNDS = "Buy order failed: Insufficient funds.";
 
-    public static final Integer ORDER_COMPLETED_CODE  = 5010;
+    public static final Integer ORDER_COMPLETED_CODE = 5010;
     public static final String ORDER_COMPLETED = "Order completed successfully";
     public final static String API_PROCESSED_FAILURE = "Error while processing the request";
 
 
     // Method
     public static final String POST_METHOD = "POST";
-    public static final String GET_METHOD = "GET";
-    public static final String DELETE_METHOD = "GET";
     public static final String PUT_METHOD = "PUT";
 
     //Response
     public static final String BAD_REQUEST = "[BAD REQUEST] : ";
     public static final String UNEXPECTED_ERROR = "[UNEXPECTED ERROR] : ";
     public static final String MALFORMED_JSON = "[MALFORMED JSON] : ";
+
     public enum OrderType {
         REDEEM,
         BUY

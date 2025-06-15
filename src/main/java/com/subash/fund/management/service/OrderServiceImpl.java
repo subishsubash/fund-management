@@ -16,6 +16,22 @@ import java.util.Optional;
 
 import static com.subash.fund.management.util.Constants.*;
 
+/**
+ * Implementation of {@link OrderService} that handles buying and redeeming mutual fund units.
+ * <p>
+ * Validates the request, processes the fund NAV, updates user holdings and fund scripts,
+ * and logs transactions in the database.
+ * </p>
+ * Supports two order types:
+ * <ul>
+ *     <li>BUY – Buys fund units for a user.</li>
+ *     <li>REDEEM – Redeems fund units and credits the user.</li>
+ * </ul>
+ * <p>
+ * All actions are logged and validated against the current NAV for the fund.
+ *
+ * @author Subash
+ */
 @Service
 public class OrderServiceImpl implements OrderService {
     private static final Logger logger = LogManager.getLogger(OrderServiceImpl.class);
@@ -28,6 +44,9 @@ public class OrderServiceImpl implements OrderService {
     private final TransactionRepository transactionRepository;
     private final GenericLogger genericLogger;
 
+    /**
+     * Constructor-based dependency injection for order processing.
+     */
     public OrderServiceImpl(FundRepository fundRepository,
                             FundNavRepository fundNavRepository, UserHoldingRepository userHoldingRepository,
                             UserRepository userRepository, TransactionRepository transactionRepository, GenericLogger genericLogger) {
@@ -39,6 +58,15 @@ public class OrderServiceImpl implements OrderService {
         this.genericLogger = genericLogger;
     }
 
+    /**
+     * Processes a mutual fund order (BUY or REDEEM).
+     *
+     * @param uuid      Unique identifier for tracking the request.
+     * @param orderType Type of order to process – either "BUY" or "REDEEM".
+     * @param orderView Contains order input details like fund ID, username, units, and NAV.
+     * @return {@link ResponseEntity} containing order status and message.
+     * @throws Exception if any step of order processing fails.
+     */
     @Override
     public ResponseEntity<OrderResponse> createOrder(String uuid, String orderType, OrderView orderView) throws Exception {
         logger.info(uuid + COMMA + LOG_MESSAGE + "Processing create order request");
@@ -75,10 +103,10 @@ public class OrderServiceImpl implements OrderService {
             logger.info(uuid + COMMA + LOG_MESSAGE + "Initiated " + orderType + " Order");
             if (orderType.equalsIgnoreCase(OrderType.REDEEM.name())) {
                 // Process REDEEM Order
-                return redeemOrder(userHoldingOptional, fundScript, fundNav, orderView);
+                return redeemOrder(uuid, userHoldingOptional, fundScript, fundNav, orderView);
             }
             // Process buyOrder
-            return buyOrder(userHoldingOptional, fundScript, fundNav, userOptional.get(), orderView);
+            return buyOrder(uuid, userHoldingOptional, fundScript, fundNav, userOptional.get(), orderView);
         } catch (Exception e) {
             // Logger error response
             genericLogger.logResponse(logger, uuid, "ERROR", Constants.API_PROCESSED_FAILURE);
@@ -86,7 +114,10 @@ public class OrderServiceImpl implements OrderService {
         }
     }
 
-    private ResponseEntity<OrderResponse> redeemOrder(Optional<UserHolding> userHoldingOptional, FundScript fundScript, FundNav fundNav, OrderView orderView) {
+    /**
+     * Processes a redeem order by deducting units from user's holdings and updating the fund.
+     */
+    private ResponseEntity<OrderResponse> redeemOrder(String uuid, Optional<UserHolding> userHoldingOptional, FundScript fundScript, FundNav fundNav, OrderView orderView) {
         OrderResponse orderResponse = new OrderResponse();
         if (userHoldingOptional.isEmpty() || userHoldingOptional.get().getUnits().compareTo(orderView.getUnits()) <= 0) {
             // Bad request - If insufficient units on redeem request
@@ -94,6 +125,7 @@ public class OrderServiceImpl implements OrderService {
             orderResponse.setMessage(INSUFFICIENT_UNITS_USER);
             return new ResponseEntity<>(orderResponse, HttpStatus.BAD_REQUEST);
         }
+        logger.info(uuid + COMMA + LOG_MESSAGE + "Record Available in UserHolding");
         UserHolding userHolding = userHoldingOptional.get();
         // Reduce units count in userHolding table
         userHolding.setUnits(userHolding.getUnits().subtract(orderView.getUnits()));
@@ -101,24 +133,31 @@ public class OrderServiceImpl implements OrderService {
         BigDecimal unitValue = fundNav.getNav().multiply(orderView.getUnits());
         userHolding.setTotalValue(userHolding.getTotalValue().subtract(unitValue));
 
+
         // Add totalUnit count from fundScript table
         fundScript.setTotalUnits(fundScript.getTotalUnits().add(orderView.getUnits()));
         userHoldingRepository.save(userHolding);
+        logger.info(uuid + COMMA + LOG_MESSAGE + "Record Saved UserHolding");
         fundRepository.save(fundScript);
+        logger.info(uuid + COMMA + LOG_MESSAGE + "Record Saved FundScripts");
         orderResponse.setCode(ORDER_COMPLETED_CODE);
         orderResponse.setMessage(ORDER_COMPLETED);
 
         // Create an entry in Transaction table
         saveTransactionHistory(fundScript, userHolding.getUser(), orderView, unitValue, "REDEEM");
-
+        logger.info(uuid + COMMA + LOG_MESSAGE + "Record Saved Transaction");
         return new ResponseEntity<>(orderResponse, HttpStatus.CREATED);
     }
 
-    private ResponseEntity<OrderResponse> buyOrder(Optional<UserHolding> userHoldingOptional, FundScript fundScript, FundNav fundNav, User user, OrderView orderView) {
+    /**
+     * Processes a buy order by adding units to user's holdings and updating the fund.
+     */
+    private ResponseEntity<OrderResponse> buyOrder(String uuid, Optional<UserHolding> userHoldingOptional, FundScript fundScript, FundNav fundNav, User user, OrderView orderView) {
         OrderResponse orderResponse = new OrderResponse();
         UserHolding userHolding;
         BigDecimal totalValue;
         if (userHoldingOptional.isPresent()) {
+            logger.info(uuid + COMMA + LOG_MESSAGE + "Record Available in UserHolding");
             userHolding = userHoldingOptional.get();
             // Bad request - If insufficient units on buy request
             if (fundScript.getTotalUnits().compareTo(orderView.getUnits()) <= 0) {
@@ -135,6 +174,7 @@ public class OrderServiceImpl implements OrderService {
             fundScript.setTotalUnits(fundScript.getTotalUnits().subtract(orderView.getUnits()));
 
         } else {
+            logger.info(uuid + COMMA + LOG_MESSAGE + "Creating New Record in UserHolding");
             // 1st time buy order creates record in UserHolding.
             userHolding = new UserHolding();
             userHolding.setUser(user);
@@ -147,16 +187,22 @@ public class OrderServiceImpl implements OrderService {
 
         }
         userHoldingRepository.save(userHolding);
+        logger.info(uuid + COMMA + LOG_MESSAGE + "Record Saved UserHolding");
         fundRepository.save(fundScript);
+        logger.info(uuid + COMMA + LOG_MESSAGE + "Record Saved FundScripts");
         orderResponse.setTotalValue(totalValue);
         orderResponse.setCode(ORDER_COMPLETED_CODE);
         orderResponse.setMessage(ORDER_COMPLETED);
 
         // Create an entry in Transaction table
         saveTransactionHistory(fundScript, user, orderView, totalValue, "BUY");
+        logger.info(uuid + COMMA + LOG_MESSAGE + "Record Saved Transaction");
         return new ResponseEntity<>(orderResponse, HttpStatus.CREATED);
     }
 
+    /**
+     * Records the transaction into the transaction table.
+     */
     private void saveTransactionHistory(FundScript fundScript, User user, OrderView orderView, BigDecimal amount, String orderType) {
         Transaction transaction = new Transaction();
         transaction.setUser(user);

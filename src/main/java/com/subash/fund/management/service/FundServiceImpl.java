@@ -17,6 +17,27 @@ import java.util.Optional;
 
 import static com.subash.fund.management.util.Constants.*;
 
+/**
+ * Implementation of the {@link FundService} interface for handling operations related to mutual funds.
+ * <p>
+ * This service handles:
+ * <ul>
+ *     <li>Registering new mutual funds</li>
+ *     <li>Updating NAV (Net Asset Value) for existing funds</li>
+ *     <li>Logging and exception handling</li>
+ * </ul>
+ *
+ * This class uses {@link FundRepository} and {@link FundNavRepository} for data persistence,
+ * and {@link FundMapper} for model transformation.
+ *
+ * @author Subash
+ * @see FundService
+ * @see FundScript
+ * @see FundNav
+ * @see FundView
+ * @see FundNavView
+ * @see FundResponse
+ */
 @Service
 public class FundServiceImpl implements FundService {
 
@@ -28,12 +49,30 @@ public class FundServiceImpl implements FundService {
     private final GenericLogger genericLogger;
 
 
+    /**
+     * Constructor to inject required dependencies.
+     *
+     * @param fundRepository     Repository for fund scripts
+     * @param fundNavRepository  Repository for fund NAVs
+     * @param genericLogger      Utility logger for request/response logging
+     */
     public FundServiceImpl(FundRepository fundRepository, FundNavRepository fundNavRepository, GenericLogger genericLogger) {
         this.fundRepository = fundRepository;
         this.fundNavRepository = fundNavRepository;
         this.genericLogger = genericLogger;
     }
 
+    /**
+     * Registers a new mutual fund along with its initial NAV value.
+     * <p>
+     * If the fund already exists, it returns a response indicating the same.
+     * Otherwise, it creates both the {@link FundScript} and its associated {@link FundNav}.
+     *
+     * @param uuid     Unique identifier for request tracking
+     * @param fundView Incoming data model containing fund and NAV details
+     * @return {@link ResponseEntity} with the result of the operation
+     * @throws Exception if creation fails due to database or processing error
+     */
     @Override
     public ResponseEntity<FundResponse> createFund(String uuid, FundView fundView) throws Exception {
         logger.info(uuid + COMMA + LOG_MESSAGE + "Processing create funds request");
@@ -69,6 +108,17 @@ public class FundServiceImpl implements FundService {
         return new ResponseEntity<>(fundResponse, HttpStatus.CREATED);
     }
 
+    /**
+     * Updates the NAV value for an existing mutual fund.
+     * <p>
+     * If the fund is not found, it returns a {@code RECORD_NOT_FOUND} response.
+     *
+     * @param uuid         Unique identifier for request tracking
+     * @param fundId       ID of the fund to be updated
+     * @param fundNavView  Incoming NAV data
+     * @return {@link ResponseEntity} containing success or error message
+     * @throws Exception if update fails due to database or processing error
+     */
     @Override
     public ResponseEntity<FundResponse> updateFund(String uuid, String fundId, FundNavView fundNavView) throws Exception {
         logger.info(uuid + COMMA + LOG_MESSAGE + "Processing create funds request");

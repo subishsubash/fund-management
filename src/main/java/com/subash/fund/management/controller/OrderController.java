@@ -15,6 +15,15 @@ import org.springframework.web.bind.annotation.*;
 
 import static com.subash.fund.management.util.Constants.*;
 
+/**
+ * REST controller responsible for handling order-related operations for funds.
+ * <p>
+ * This controller validates user identity and processes fund buy/sell orders
+ * using the {@link OrderService}. All requests and responses are logged using
+ * the {@link GenericLogger}.
+ * </p>
+ *
+ */
 @RestController
 @RequestMapping("/v1/api/funds")
 public class OrderController {
@@ -25,11 +34,31 @@ public class OrderController {
     private final GenericLogger genericLogger;
 
 
+    /**
+     * Constructs a new {@code OrderController} with the given service and logger.
+     *
+     * @param orderService   service responsible for order processing
+     * @param genericLogger  utility for standardized logging
+     */
     public OrderController(OrderService orderService, GenericLogger genericLogger) {
         this.orderService = orderService;
         this.genericLogger = genericLogger;
     }
 
+    /**
+     * Creates a new order (e.g., BUY or SELL) for a given user and fund.
+     * <p>
+     * This method validates that the authenticated user matches the username in the request
+     * before processing the order. If the validation fails, the response is {@code 403 FORBIDDEN}.
+     * </p>
+     *
+     * @param orderType the type of order to create (e.g., "BUY", "SELL")
+     * @param orderView the order request payload containing user and fund details
+     * @return {@link ResponseEntity} containing order processing response and status
+     * @throws Exception if order creation fails internally
+     *
+     * @apiNote Endpoint: {@code POST /v1/api/funds/order}
+     */
     @PostMapping("/order")
     public ResponseEntity<OrderResponse> createOrder(@Valid @RequestParam("orderType") String orderType, @Valid @RequestBody OrderView orderView) throws Exception {
         String authenticatedUsername = SecurityContextHolder.getContext().getAuthentication().getName();

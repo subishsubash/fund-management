@@ -76,7 +76,7 @@ public class Constants {
     public static final String UNEXPECTED_ERROR = "[UNEXPECTED ERROR] : ";
     public static final String MALFORMED_JSON = "[MALFORMED JSON] : ";
     public enum OrderType {
-        SELL,
+        REDEEM,
         BUY
     }
 

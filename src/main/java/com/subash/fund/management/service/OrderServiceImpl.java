@@ -1,10 +1,7 @@
 package com.subash.fund.management.service;
 
 import com.subash.fund.management.model.*;
-import com.subash.fund.management.repository.FundNavRepository;
-import com.subash.fund.management.repository.FundRepository;
-import com.subash.fund.management.repository.UserHoldingRepository;
-import com.subash.fund.management.repository.UserRepository;
+import com.subash.fund.management.repository.*;
 import com.subash.fund.management.util.Constants;
 import com.subash.fund.management.util.GenericLogger;
 import org.apache.logging.log4j.LogManager;
@@ -27,15 +24,18 @@ public class OrderServiceImpl implements OrderService {
     private final FundNavRepository fundNavRepository;
     private final UserHoldingRepository userHoldingRepository;
     private final UserRepository userRepository;
+
+    private final TransactionRepository transactionRepository;
     private final GenericLogger genericLogger;
 
     public OrderServiceImpl(FundRepository fundRepository,
                             FundNavRepository fundNavRepository, UserHoldingRepository userHoldingRepository,
-                            UserRepository userRepository, GenericLogger genericLogger) {
+                            UserRepository userRepository, TransactionRepository transactionRepository, GenericLogger genericLogger) {
         this.fundRepository = fundRepository;
         this.fundNavRepository = fundNavRepository;
         this.userRepository = userRepository;
         this.userHoldingRepository = userHoldingRepository;
+        this.transactionRepository = transactionRepository;
         this.genericLogger = genericLogger;
     }
 
@@ -73,9 +73,9 @@ public class OrderServiceImpl implements OrderService {
             FundScript fundScript = fundOptional.get();
             FundNav fundNav = fundNavOptional.get();
             logger.info(uuid + COMMA + LOG_MESSAGE + "Initiated " + orderType + " Order");
-            if (orderType.equalsIgnoreCase(OrderType.SELL.name())) {
-                // Process sellOrder
-                return sellOrder(userHoldingOptional, fundScript, fundNav, orderView);
+            if (orderType.equalsIgnoreCase(OrderType.REDEEM.name())) {
+                // Process REDEEM Order
+                return redeemOrder(userHoldingOptional, fundScript, fundNav, orderView);
             }
             // Process buyOrder
             return buyOrder(userHoldingOptional, fundScript, fundNav, userOptional.get(), orderView);
@@ -86,10 +86,10 @@ public class OrderServiceImpl implements OrderService {
         }
     }
 
-    private ResponseEntity<OrderResponse> sellOrder(Optional<UserHolding> userHoldingOptional, FundScript fundScript, FundNav fundNav, OrderView orderView) {
+    private ResponseEntity<OrderResponse> redeemOrder(Optional<UserHolding> userHoldingOptional, FundScript fundScript, FundNav fundNav, OrderView orderView) {
         OrderResponse orderResponse = new OrderResponse();
         if (userHoldingOptional.isEmpty() || userHoldingOptional.get().getUnits().compareTo(orderView.getUnits()) <= 0) {
-            // Bad request - If insufficient units on sell request
+            // Bad request - If insufficient units on redeem request
             orderResponse.setCode(INSUFFICIENT_UNITS_USER_CODE);
             orderResponse.setMessage(INSUFFICIENT_UNITS_USER);
             return new ResponseEntity<>(orderResponse, HttpStatus.BAD_REQUEST);
@@ -108,12 +108,16 @@ public class OrderServiceImpl implements OrderService {
         orderResponse.setCode(ORDER_COMPLETED_CODE);
         orderResponse.setMessage(ORDER_COMPLETED);
 
+        // Create an entry in Transaction table
+        saveTransactionHistory(fundScript, userHolding.getUser(), orderView, unitValue, "REDEEM");
+
         return new ResponseEntity<>(orderResponse, HttpStatus.CREATED);
     }
 
     private ResponseEntity<OrderResponse> buyOrder(Optional<UserHolding> userHoldingOptional, FundScript fundScript, FundNav fundNav, User user, OrderView orderView) {
         OrderResponse orderResponse = new OrderResponse();
         UserHolding userHolding;
+        BigDecimal totalValue;
         if (userHoldingOptional.isPresent()) {
             userHolding = userHoldingOptional.get();
             // Bad request - If insufficient units on buy request
@@ -125,29 +129,43 @@ public class OrderServiceImpl implements OrderService {
             // Add units count in userHolding table
             userHolding.setUnits(userHolding.getUnits().add(orderView.getUnits()));
             // Add totalValue in userHolding table
-            BigDecimal unitValue = fundNav.getNav().multiply(orderView.getUnits());
-            userHolding.setTotalValue(userHolding.getTotalValue().add(unitValue));
+            totalValue = fundNav.getNav().multiply(orderView.getUnits());
+            userHolding.setTotalValue(userHolding.getTotalValue().add(totalValue));
             // Reduce totalUnit count from fundScript table
             fundScript.setTotalUnits(fundScript.getTotalUnits().subtract(orderView.getUnits()));
-            orderResponse.setTotalValue(unitValue);
+
         } else {
             // 1st time buy order creates record in UserHolding.
             userHolding = new UserHolding();
             userHolding.setUser(user);
             userHolding.setFund(fundScript);
             userHolding.setUnits(orderView.getUnits());
-            BigDecimal unitValue = fundNav.getNav().multiply(orderView.getUnits());
-            userHolding.setTotalValue(unitValue);
+            totalValue = fundNav.getNav().multiply(orderView.getUnits());
+            userHolding.setTotalValue(totalValue);
             // Reduce totalUnit count from fundScript table
             fundScript.setTotalUnits(fundScript.getTotalUnits().subtract(orderView.getUnits()));
-            orderResponse.setTotalValue(unitValue);
+
         }
         userHoldingRepository.save(userHolding);
         fundRepository.save(fundScript);
-
+        orderResponse.setTotalValue(totalValue);
         orderResponse.setCode(ORDER_COMPLETED_CODE);
         orderResponse.setMessage(ORDER_COMPLETED);
+
+        // Create an entry in Transaction table
+        saveTransactionHistory(fundScript, user, orderView, totalValue, "BUY");
         return new ResponseEntity<>(orderResponse, HttpStatus.CREATED);
+    }
+
+    private void saveTransactionHistory(FundScript fundScript, User user, OrderView orderView, BigDecimal amount, String orderType) {
+        Transaction transaction = new Transaction();
+        transaction.setUser(user);
+        transaction.setFund(fundScript);
+        transaction.setType(orderType);
+        transaction.setNav(orderView.getNav());
+        transaction.setUnits(orderView.getUnits());
+        transaction.setAmount(amount);
+        transactionRepository.save(transaction);
     }
 
 }

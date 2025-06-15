@@ -65,7 +65,7 @@ paths:
           required: true
           schema:
             type: string
-            enum: [ BUY, SELL ]
+            enum: [ BUY, REDEEM ]
           description: Order type
       requestBody:
         required: true

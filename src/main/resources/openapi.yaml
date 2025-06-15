@@ -27,6 +27,31 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/FundResponse"
+    put:
+      tags:
+        - FundController
+      summary: Update funds nav
+      operationId: updateFund
+      parameters:
+        - name: fundId
+          in: path
+          required: true
+          description: FundId to update fund nav and nav date
+          schema:
+            type: number
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/FundNavView"
+      responses:
+        '201':
+          description: Funds creation response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FundResponse"
 components:
   schemas:
     FundResponse:
@@ -49,14 +74,33 @@ components:
           type: string
           minLength: 10
           maxLength: 20
-          pattern: "^[a-zA-Z0-9]+$"
+          pattern: "^[0-9]+$"
           description: "Must be alphanumeric, 10-20 characters"
         fundName:
           type: string
           minLength: 10
           maxLength: 50
-          pattern: "^[a-zA-Z0-9]+$"
+          pattern: "^[a-zA-Z0-9_ ]*$"
           description: "Must be alphanumeric, 10-50 characters"
+        nav:
+          type: number
+          format: double
+          description: Script price
+          minimum: 0.1
+          example: 999.99
+        navDate:
+          type: string
+          format: date
+          description: Nav date
+          example: 2025-05-31
+      required:
+        - fundId
+        - fundName
+        - nav
+        - navDate
+    FundNavView:
+      type: object
+      properties:
         nav:
           type: number
           format: double
@@ -69,8 +113,6 @@ components:
           description: Nav date
           example: 2025-05-31
       required:
-        - fundId
-        - fundName
         - nav
         - navDate
 

@@ -30,6 +30,7 @@ public class Constants {
 
     // Operation Id
     public final static String CREATE_FUND = "createFund";
+    public final static String UPDATE_FUND = "updateFund";
     public final static String GET_FUND = "getFund";
 
     public final static String GET_ALL_FUND = "getAllFund";
@@ -40,10 +41,14 @@ public class Constants {
     public static final Integer CREATE_RECORD_SUCCESS_CODE = 5001;
     public static final String RECORD_EXIST = "User exist already with username";
     public static final Integer RECORD_EXIST_CODE = 5002;
-    public static final String RECORD_NOT_FOUND = "Fund not found for requested username";
-    public static final Integer RECORD_NOT_FOUND_CODE = 5003;
+    public static final String UPDATE_RECORD_SUCCESS = "Update the funds nav";
+    public static final Integer UPDATE_RECORD_SUCCESS_CODE = 5003;
     public static final String RECORD_FOUND = "Fund details found";
     public static final Integer RECORD_FOUND_CODE = 5004;
+
+    public static final String RECORD_NOT_FOUND = "Fund details not found";
+    public static final Integer RECORD_NOT_FOUND_CODE = 5006;
+
 
     public static final String RECORD_REMOVED = "Fund details removed";
     public static final Integer RECORD_REMOVED_CODE = 5005;
@@ -58,6 +63,7 @@ public class Constants {
     public static final String POST_METHOD = "POST";
     public static final String GET_METHOD = "GET";
     public static final String DELETE_METHOD = "GET";
+    public static final String PUT_METHOD = "PUT";
 
     //Response
     public static final String BAD_REQUEST = "[BAD REQUEST] : ";

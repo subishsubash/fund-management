@@ -1,6 +1,7 @@
 package com.subash.fund.management.controller;
 
 
+import com.subash.fund.management.model.FundNavView;
 import com.subash.fund.management.model.FundResponse;
 import com.subash.fund.management.model.FundView;
 import com.subash.fund.management.service.FundService;
@@ -11,10 +12,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import static com.subash.fund.management.util.Constants.COMMA;
 import static com.subash.fund.management.util.Constants.LOG_MESSAGE;
@@ -30,13 +28,12 @@ public class FundController {
 
 
     public FundController(FundService fundService, GenericLogger genericLogger) {
-
         this.fundService = fundService;
         this.genericLogger = genericLogger;
     }
 
     @PostMapping("/funds")
-    public ResponseEntity<FundResponse> createUser(@Valid @RequestBody FundView fundView) throws Exception {
+    public ResponseEntity<FundResponse> createFund(@Valid @RequestBody FundView fundView) throws Exception {
         String uuid = GenericLogger.getUUID();
         logger.info(uuid + COMMA + LOG_MESSAGE + "Request received to fund registration");
         //Log request
@@ -45,6 +42,19 @@ public class FundController {
         //Log response
         genericLogger.logResponse(logger, uuid, HttpStatus.OK.name(), fundResponse);
         logger.info(uuid + COMMA + LOG_MESSAGE + "Fund registration request completed");
+        return fundResponse;
+    }
+
+    @PutMapping("/funds/{fundId}")
+    public ResponseEntity<FundResponse> updateFund(@Valid @PathVariable("fundId") String fundId, @Valid @RequestBody FundNavView fundNavView) throws Exception {
+        String uuid = GenericLogger.getUUID();
+        logger.info(uuid + COMMA + LOG_MESSAGE + "Request received to update fund");
+        //Log request
+        genericLogger.logRequest(logger, uuid, Constants.UPDATE_FUND, Constants.PUT_METHOD, fundNavView);
+        ResponseEntity<FundResponse> fundResponse = fundService.updateFund(uuid, fundId, fundNavView);
+        //Log response
+        genericLogger.logResponse(logger, uuid, HttpStatus.OK.name(), fundResponse);
+        logger.info(uuid + COMMA + LOG_MESSAGE + "Fund update request completed");
         return fundResponse;
     }
 

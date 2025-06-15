@@ -1,10 +1,7 @@
 package com.subash.fund.management.service;
 
 import com.subash.fund.management.mapper.FundMapper;
-import com.subash.fund.management.model.FundNav;
-import com.subash.fund.management.model.FundResponse;
-import com.subash.fund.management.model.FundScript;
-import com.subash.fund.management.model.FundView;
+import com.subash.fund.management.model.*;
 import com.subash.fund.management.repository.FundNavRepository;
 import com.subash.fund.management.repository.FundRepository;
 import com.subash.fund.management.util.Constants;
@@ -63,6 +60,35 @@ public class FundServiceImpl implements FundService {
                 fundResponse.setCode(CREATE_RECORD_SUCCESS_CODE);
                 fundResponse.setMessage(CREATE_RECORD_SUCCESS);
             }
+        } catch (Exception e) {
+            // Logger error response
+            genericLogger.logResponse(logger, uuid, "ERROR", Constants.API_PROCESSED_FAILURE);
+            throw new Exception(e);
+        }
+        logger.info(uuid + COMMA + LOG_MESSAGE + "Create fund request processed");
+        return new ResponseEntity<>(fundResponse, HttpStatus.CREATED);
+    }
+
+    @Override
+    public ResponseEntity<FundResponse> updateFund(String uuid, String fundId, FundNavView fundNavView) throws Exception {
+        logger.info(uuid + COMMA + LOG_MESSAGE + "Processing create funds request");
+        FundResponse fundResponse = new FundResponse();
+        try {
+            Optional<FundScript> fundScriptOptional = fundRepository.findById(fundId);
+            FundNav fundNav = new FundNav();
+
+            if (fundScriptOptional.isPresent()) {
+                fundNav.setFundId(fundScriptOptional.get());
+                fundNav.setNavDate(fundNavView.getNavDate());
+                fundNav.setNav(new BigDecimal(fundNavView.getNav()));
+                fundNavRepository.save(fundNav);
+                fundResponse.setCode(UPDATE_RECORD_SUCCESS_CODE);
+                fundResponse.setMessage(UPDATE_RECORD_SUCCESS);
+            } else {
+                fundResponse.setCode(RECORD_NOT_FOUND_CODE);
+                fundResponse.setMessage(RECORD_NOT_FOUND);
+            }
+
         } catch (Exception e) {
             // Logger error response
             genericLogger.logResponse(logger, uuid, "ERROR", Constants.API_PROCESSED_FAILURE);

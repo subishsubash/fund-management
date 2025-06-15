@@ -27,9 +27,10 @@ public class SecurityConfig {
     private CustomUserDetailsService customUserDetailsService;
 
     /**
-     * Defines the password encoder bean using BCrypt.
+     * Defines the password encoder bean used for encoding and validating passwords.
+     * BCrypt is used for secure one-way password hashing.
      *
-     * @return the password encoder instance
+     * @return {@link PasswordEncoder} instance using BCrypt
      */
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -37,17 +38,20 @@ public class SecurityConfig {
     }
 
     /**
-     * Configures HTTP security for the application.
-     * <ul>
-     *     <li>Allows user registration without authentication</li>
-     *     <li>Restricts DELETE and GET (all users) access to ADMIN role only</li>
-     *     <li>Requires authentication for all other endpoints</li>
-     * </ul>
-     * Uses HTTP Basic for authentication and disables CSRF for simplicity (typically used for stateless APIs).
+     * Configures the security filter chain to enforce endpoint access rules and authentication.
      *
-     * @param http the HTTP security configuration
-     * @return configured security filter chain
-     * @throws Exception if the configuration fails
+     * <p>Details of configuration:
+     * <ul>
+     *   <li>Disables CSRF protection (not needed for REST APIs)</li>
+     *   <li>Allows unrestricted access to Swagger/OpenAPI documentation</li>
+     *   <li>Restricts fund management endpoints to ADMIN users</li>
+     *   <li>Restricts fund order placement to USER role</li>
+     *   <li>Requires authentication for all other requests</li>
+     * </ul>
+     *
+     * @param http the {@link HttpSecurity} object provided by Spring Security
+     * @return configured {@link SecurityFilterChain}
+     * @throws Exception if there is any error during configuration
      */
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -69,13 +73,14 @@ public class SecurityConfig {
         return http.build();
     }
 
+
     /**
-     * Provides the {@link AuthenticationManager} bean from the Spring Security context.
-     * Used to process authentication requests.
+     * Provides the {@link AuthenticationManager} bean used for authenticating credentials.
+     * Delegates to Spring Security’s {@link AuthenticationConfiguration}.
      *
-     * @param authConfig the authentication configuration
-     * @return the authentication manager
-     * @throws Exception if retrieval fails
+     * @param authConfig the {@link AuthenticationConfiguration} instance
+     * @return the configured {@link AuthenticationManager}
+     * @throws Exception if an error occurs while retrieving the authentication manager
      */
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {

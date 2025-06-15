@@ -6,6 +6,8 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.Data;
 
+import java.math.BigDecimal;
+
 /**
  * Entity class for funds_scripts table
  */
@@ -20,5 +22,8 @@ public class FundScript {
 
     @Column(name = "fund_name", nullable = false)
     private String fundName;
+
+    @Column(name = "total_units", nullable = false)
+    private BigDecimal totalUnits;
 
 }

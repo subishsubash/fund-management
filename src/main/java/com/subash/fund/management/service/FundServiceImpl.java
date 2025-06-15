@@ -54,7 +54,7 @@ public class FundServiceImpl implements FundService {
                 FundNav fundNav = new FundNav();
                 fundNav.setFundId(fundScript);
                 fundNav.setNavDate(fundView.getNavDate());
-                fundNav.setNav(new BigDecimal(fundView.getNav()));
+                fundNav.setNav(fundView.getNav());
                 fundNavRepository.save(fundNav);
 
                 fundResponse.setCode(CREATE_RECORD_SUCCESS_CODE);

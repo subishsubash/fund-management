@@ -61,8 +61,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.DELETE, "/v1/api/funds").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/v1/api/funds").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.GET, "/v1/api/funds").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.POST, "/v1/api/funds/order/buy").hasRole("USER")
-                        .requestMatchers(HttpMethod.POST, "/v1/api/funds/order/sell").hasRole("USER")
+                        .requestMatchers(HttpMethod.POST, "/v1/api/funds/order").hasRole("USER")
                         .anyRequest().authenticated()
                 )
                 .httpBasic(Customizer.withDefaults());

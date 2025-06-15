@@ -52,12 +52,41 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/FundResponse"
+
+  /v1/api/funds/order:
+    post:
+      tags:
+        - OrderController
+      summary: Buy Order request
+      operationId: createOrder
+      parameters:
+        - name: orderType
+          in: query
+          required: true
+          schema:
+            type: string
+            enum: [ BUY, SELL ]
+          description: Order type
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OrderView"
+      responses:
+        '201':
+          description: Order creation response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OrderResponse"
+
 components:
   schemas:
     FundResponse:
       type: object
       properties:
-        Fund:
+        fund:
           $ref: "#/components/schemas/FundView"
         code:
           type: integer
@@ -66,7 +95,7 @@ components:
       required:
         - status
         - message
-        - user
+        - fund
     FundView:
       type: object
       properties:
@@ -75,7 +104,7 @@ components:
           minLength: 10
           maxLength: 20
           pattern: "^[0-9]+$"
-          description: "Must be alphanumeric, 10-20 characters"
+          description: "Must be numeric, 10-20 characters"
         fundName:
           type: string
           minLength: 10
@@ -84,10 +113,12 @@ components:
           description: "Must be alphanumeric, 10-50 characters"
         nav:
           type: number
-          format: double
           description: Script price
           minimum: 0.1
           example: 999.99
+        totalUnits:
+          type: number
+          description: Total number of Units available
         navDate:
           type: string
           format: date
@@ -104,7 +135,7 @@ components:
         nav:
           type: number
           format: double
-          description: Product price
+          description: Script price
           minimum: 0.1
           example: 999.99
         navDate:
@@ -115,4 +146,42 @@ components:
       required:
         - nav
         - navDate
+    OrderView:
+      type: object
+      properties:
+        username:
+          type: string
+          minLength: 5
+          maxLength: 20
+          pattern: "^[a-zA-Z0-9_]+$"
+          description: "Must be alphanumeric with underscores, 5-20 characters"
+        fundId:
+          type: string
+          minLength: 10
+          maxLength: 20
+          pattern: "^[0-9]+$"
+          description: "Must be numeric, 10-20 characters"
+        units:
+          type: number
+          description: Number of units to buy
+          minimum: 1
+        nav:
+          type: number
+          description: Current Date Script price
+          minimum: 0.1
+          example: 999.99
+
+    OrderResponse:
+      type: object
+      required:
+        - totalValue
+        - status
+        - message
+      properties:
+        totalValue:
+          type: number
+        code:
+          type: integer
+        message:
+          type: string
 

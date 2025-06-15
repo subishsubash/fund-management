@@ -39,7 +39,7 @@ public class Constants {
     // API response
     public static final String CREATE_RECORD_SUCCESS = "Fund created successfully";
     public static final Integer CREATE_RECORD_SUCCESS_CODE = 5001;
-    public static final String RECORD_EXIST = "User exist already with username";
+    public static final String RECORD_EXIST = "Fund exist already with FundId";
     public static final Integer RECORD_EXIST_CODE = 5002;
     public static final String UPDATE_RECORD_SUCCESS = "Update the funds nav";
     public static final Integer UPDATE_RECORD_SUCCESS_CODE = 5003;
